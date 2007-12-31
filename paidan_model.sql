@@ -5,8 +5,8 @@
 --------------------------------------------------------------------
 --------------------------------------------------------------------
 ----------------设置时间和城市的用户变量----------------------------
-set @mydate = '2015-11-30'
-set @mycity = 4
+set @mydate = '2015-12-08';
+set @mycity = 4;
 
 --------------------------------------------------------------------
 --------------------------------------------------------------------
@@ -53,7 +53,7 @@ drop table if exists dw_tmp.bian_paidan_model_transporter;
 create table dw_tmp.bian_paidan_model_transporter as
 select
 	cal_dt,
-	create_time,
+	a.create_time as create_time,
 	a.task_id as task_id,
 	log_type_id,
 	transporter_id,
@@ -111,7 +111,7 @@ inner join
 	dw_tmp.bian_paidan_model_order b
 on a.order_id = b.order_id
 where
-	order_id <> -99
+	a.order_id <> -99
 
 union 
 
@@ -156,13 +156,6 @@ create index idx2 on dw_tmp.bian_paidan_model_transporter_order(order_id);
 create index idx3 on dw_tmp.bian_paidan_model_transporter_order(transporter_id);
 create index idx4 on dw_tmp.bian_paidan_model_transporter_order(supplier_id);
 
-
---数据验证
-select sum(case when label = 1 then 1 else 0 end) / sum(1) from dw_tmp.bian_paidan_model_transporter_order ;
-select * from dw_tmp.bian_paidan_model_transporter_order;
-select count(distinct transporter_id) from dw_tmp.bian_paidan_model_transporter_order;
-
-
 --------------------------------------------------------------------
 --------------------------------------------------------------------
 -----------------------派单动态数据---------------------------------
@@ -175,9 +168,9 @@ select
 	sum(case when create_dt = date_sub(@mydate,interval 1 day) then 1 else 0 end) transporter_before_one_day_paidan_num,
 	sum(case when create_dt = date_sub(@mydate,interval 1 day) and label = 1 then 1 else 0 end) transporter_before_one_day_paidan_success_num,
 	sum(case when create_dt = date_sub(@mydate,interval 1 day) and label = 1 then 1 else 0 end) * 1.0 / sum(case when create_dt = date_sub(@mydate,interval 1 day) then 1 else 0 end) transporter_before_one_day_paidan_lv,
-	sum(case when create_dt > date_sub(@mydate,interval 7 day) then 1 else 0 end) transporter_before_seven_day_paidan_num,
-	sum(case when create_dt > date_sub(@mydate,interval 7 day) and label = 1 then 1 else 0 end) transporter_before_seven_day_paidan_success_num,
-	sum(case when create_dt > date_sub(@mydate,interval 7 day) and label = 1 then 1 else 0 end) * 1.0 / sum(case when create_dt > date_sub(@mydate,interval 7 day) then 1 else 0 end) transporter_before_seven_day_paidan_lv,
+	sum(case when create_dt > date_sub(@mydate,interval 8 day) then 1 else 0 end) transporter_before_seven_day_paidan_num,
+	sum(case when create_dt > date_sub(@mydate,interval 8 day) and label = 1 then 1 else 0 end) transporter_before_seven_day_paidan_success_num,
+	sum(case when create_dt > date_sub(@mydate,interval 8 day) and label = 1 then 1 else 0 end) * 1.0 / sum(case when create_dt > date_sub(@mydate,interval 8 day) then 1 else 0 end) transporter_before_seven_day_paidan_lv,
 	sum(1) transporter_before_fourteen_day_paidan_num,
 	sum(case when label = 1 then 1 else 0 end) transporter_before_fourteen_day_paidan_success_num,
 	sum(case when label = 1 then 1 else 0 end) * 1.0 / sum(1) transporter_before_fourteen_day_paidan_lv
@@ -198,9 +191,9 @@ select
 	sum(case when create_dt = date_sub(@mydate,interval 1 day) then 1 else 0 end) transporter_before_one_day_jiedan_num,
 	sum(case when create_dt = date_sub(@mydate,interval 1 day) and is_finished = 1 then 1 else 0 end) transporter_before_one_day_jiedan_success_num,
 	sum(case when create_dt = date_sub(@mydate,interval 1 day) and is_finished = 1 then 1 else 0 end) * 1.0 / sum(case when create_dt = date_sub(@mydate,interval 1 day) then 1 else 0 end) transporter_before_one_day_jiedan_lv,
-	sum(case when create_dt > date_sub(@mydate,interval 7 day) then 1 else 0 end) transporter_before_seven_day_jiedan_num,
-	sum(case when create_dt > date_sub(@mydate,interval 7 day) and is_finished = 1 then 1 else 0 end) transporter_before_seven_day_jiedan_success_num,
-	sum(case when create_dt > date_sub(@mydate,interval 7 day) and is_finished = 1 then 1 else 0 end) * 1.0 / sum(case when create_dt > date_sub(@mydate,interval 7 day) then 1 else 0 end) transporter_before_seven_day_jiedan_lv,
+	sum(case when create_dt > date_sub(@mydate,interval 8 day) then 1 else 0 end) transporter_before_seven_day_jiedan_num,
+	sum(case when create_dt > date_sub(@mydate,interval 8 day) and is_finished = 1 then 1 else 0 end) transporter_before_seven_day_jiedan_success_num,
+	sum(case when create_dt > date_sub(@mydate,interval 8 day) and is_finished = 1 then 1 else 0 end) * 1.0 / sum(case when create_dt > date_sub(@mydate,interval 8 day) then 1 else 0 end) transporter_before_seven_day_jiedan_lv,
 	sum(1) transporter_before_fourteen_day_jiedan_num,
 	sum(case when is_finished = 1 then 1 else 0 end) transporter_before_fourteen_day_jiedan_success_num,
 	sum(case when is_finished = 1 then 1 else 0 end) * 1.0 / sum(1) transporter_before_fourteen_day_jiedan_lv
@@ -221,9 +214,9 @@ select
 	sum(case when create_dt = date_sub(@mydate,interval 1 day) then 1 else 0 end) supplier_before_one_day_paidan_num,
 	sum(case when create_dt = date_sub(@mydate,interval 1 day) and label = 1 then 1 else 0 end) supplier_before_one_day_paidan_success_num,
 	sum(case when create_dt = date_sub(@mydate,interval 1 day) and label = 1 then 1 else 0 end) * 1.0 / sum(case when create_dt = date_sub(@mydate,interval 1 day) then 1 else 0 end) supplier_before_one_day_paidan_lv,
-	sum(case when create_dt > date_sub(@mydate,interval 7 day) then 1 else 0 end) supplier_before_seven_day_paidan_num,
-	sum(case when create_dt > date_sub(@mydate,interval 7 day) and label = 1 then 1 else 0 end) supplier_before_seven_day_paidan_success_num,
-	sum(case when create_dt > date_sub(@mydate,interval 7 day) and label = 1 then 1 else 0 end) * 1.0 / sum(case when create_dt > date_sub(@mydate,interval 7 day) then 1 else 0 end) supplier_before_seven_day_paidan_lv,
+	sum(case when create_dt > date_sub(@mydate,interval 8 day) then 1 else 0 end) supplier_before_seven_day_paidan_num,
+	sum(case when create_dt > date_sub(@mydate,interval 8 day) and label = 1 then 1 else 0 end) supplier_before_seven_day_paidan_success_num,
+	sum(case when create_dt > date_sub(@mydate,interval 8 day) and label = 1 then 1 else 0 end) * 1.0 / sum(case when create_dt > date_sub(@mydate,interval 8 day) then 1 else 0 end) supplier_before_seven_day_paidan_lv,
 	sum(1) supplier_before_fourteen_day_paidan_num,
 	sum(case when label = 1 then 1 else 0 end) supplier_before_fourteen_day_paidan_success_num,
 	sum(case when label = 1 then 1 else 0 end) * 1.0 / sum(1) supplier_before_fourteen_day_paidan_lv
@@ -245,9 +238,9 @@ select
 	sum(case when create_dt = date_sub(@mydate,interval 1 day) then 1 else 0 end) supplier_before_one_day_jiedan_num,
 	sum(case when create_dt = date_sub(@mydate,interval 1 day) and is_finished = 1 then 1 else 0 end) supplier_before_one_day_jiedan_success_num,
 	sum(case when create_dt = date_sub(@mydate,interval 1 day) and is_finished = 1 then 1 else 0 end) * 1.0 / sum(case when create_dt = date_sub(@mydate,interval 1 day) then 1 else 0 end) supplier_before_one_day_jiedan_lv,
-	sum(case when create_dt > date_sub(@mydate,interval 7 day) then 1 else 0 end) supplier_before_seven_day_jiedan_num,
-	sum(case when create_dt > date_sub(@mydate,interval 7 day) and is_finished = 1 then 1 else 0 end) supplier_before_seven_day_jiedan_success_num,
-	sum(case when create_dt > date_sub(@mydate,interval 7 day) and is_finished = 1 then 1 else 0 end) * 1.0 / sum(case when create_dt > date_sub(@mydate,interval 7 day) then 1 else 0 end) supplier_before_seven_day_jiedan_lv,
+	sum(case when create_dt > date_sub(@mydate,interval 8 day) then 1 else 0 end) supplier_before_seven_day_jiedan_num,
+	sum(case when create_dt > date_sub(@mydate,interval 8 day) and is_finished = 1 then 1 else 0 end) supplier_before_seven_day_jiedan_success_num,
+	sum(case when create_dt > date_sub(@mydate,interval 8 day) and is_finished = 1 then 1 else 0 end) * 1.0 / sum(case when create_dt > date_sub(@mydate,interval 8 day) then 1 else 0 end) supplier_before_seven_day_jiedan_lv,
 	sum(1) supplier_before_fourteen_day_jiedan_num,
 	sum(case when is_finished = 1 then 1 else 0 end) supplier_before_fourteen_day_jiedan_success_num,
 	sum(case when is_finished = 1 then 1 else 0 end) * 1.0 / sum(1) supplier_before_fourteen_day_jiedan_lv
@@ -269,9 +262,9 @@ select
 	sum(case when create_dt = date_sub(@mydate,interval 1 day) then 1 else 0 end) transporter_supplier_before_one_day_paidan_num,
 	sum(case when create_dt = date_sub(@mydate,interval 1 day) and label = 1 then 1 else 0 end) transporter_supplier_before_one_day_paidan_success_num,
 	sum(case when create_dt = date_sub(@mydate,interval 1 day) and label = 1 then 1 else 0 end) * 1.0 / sum(case when create_dt = date_sub(@mydate,interval 1 day) then 1 else 0 end) transporter_supplier_before_one_day_paidan_lv,
-	sum(case when create_dt > date_sub(@mydate,interval 7 day) then 1 else 0 end) transporter_supplier_before_seven_day_paidan_num,
-	sum(case when create_dt > date_sub(@mydate,interval 7 day) and label = 1 then 1 else 0 end) transporter_supplier_before_seven_day_paidan_success_num,
-	sum(case when create_dt > date_sub(@mydate,interval 7 day) and label = 1 then 1 else 0 end) * 1.0 / sum(case when create_dt > date_sub(@mydate,interval 7 day) then 1 else 0 end) transporter_supplier_before_seven_day_paidan_lv,
+	sum(case when create_dt > date_sub(@mydate,interval 8 day) then 1 else 0 end) transporter_supplier_before_seven_day_paidan_num,
+	sum(case when create_dt > date_sub(@mydate,interval 8 day) and label = 1 then 1 else 0 end) transporter_supplier_before_seven_day_paidan_success_num,
+	sum(case when create_dt > date_sub(@mydate,interval 8 day) and label = 1 then 1 else 0 end) * 1.0 / sum(case when create_dt > date_sub(@mydate,interval 8 day) then 1 else 0 end) transporter_supplier_before_seven_day_paidan_lv,
 	sum(1) transporter_supplier_before_fourteen_day_paidan_num,
 	sum(case when label = 1 then 1 else 0 end) transporter_supplier_before_fourteen_day_paidan_success_num,
 	sum(case when label = 1 then 1 else 0 end) * 1.0 / sum(1) transporter_supplier_before_fourteen_day_paidan_lv
@@ -294,9 +287,9 @@ select
 	sum(case when create_dt = date_sub(@mydate,interval 1 day) then 1 else 0 end) transporter_supplier_before_one_day_jiedan_num,
 	sum(case when create_dt = date_sub(@mydate,interval 1 day) and is_finished = 1 then 1 else 0 end) transporter_supplier_before_one_day_jiedan_success_num,
 	sum(case when create_dt = date_sub(@mydate,interval 1 day) and is_finished = 1 then 1 else 0 end) * 1.0 / sum(case when create_dt = date_sub(@mydate,interval 1 day) then 1 else 0 end) transporter_supplier_before_one_day_jiedan_lv,
-	sum(case when create_dt > date_sub(@mydate,interval 7 day) then 1 else 0 end) transporter_supplier_before_seven_day_jiedan_num,
-	sum(case when create_dt > date_sub(@mydate,interval 7 day) and is_finished = 1 then 1 else 0 end) transporter_supplier_before_seven_day_jiedan_success_num,
-	sum(case when create_dt > date_sub(@mydate,interval 7 day) and is_finished = 1 then 1 else 0 end) * 1.0 / sum(case when create_dt > date_sub(@mydate,interval 7 day) then 1 else 0 end) transporter_supplier_before_seven_day_jiedan_lv,
+	sum(case when create_dt > date_sub(@mydate,interval 8 day) then 1 else 0 end) transporter_supplier_before_seven_day_jiedan_num,
+	sum(case when create_dt > date_sub(@mydate,interval 8 day) and is_finished = 1 then 1 else 0 end) transporter_supplier_before_seven_day_jiedan_success_num,
+	sum(case when create_dt > date_sub(@mydate,interval 8 day) and is_finished = 1 then 1 else 0 end) * 1.0 / sum(case when create_dt > date_sub(@mydate,interval 8 day) then 1 else 0 end) transporter_supplier_before_seven_day_jiedan_lv,
 	sum(1) transporter_supplier_before_fourteen_day_jiedan_num,
 	sum(case when is_finished = 1 then 1 else 0 end) transporter_supplier_before_fourteen_day_jiedan_success_num,
 	sum(case when is_finished = 1 then 1 else 0 end) * 1.0 / sum(1) transporter_supplier_before_fourteen_day_jiedan_lv
@@ -428,6 +421,7 @@ group by
 	1,2,3;
 create index idx1 on dw_tmp.bian_transporter_shishi_paidan_num(order_id);
 create index idx2 on dw_tmp.bian_transporter_shishi_paidan_num(order_group_id);
+create index idx3 on dw_tmp.bian_transporter_shishi_paidan_num(transporter_id);
 	
 --派单时距离数据(到接受者的距离)
 drop table if exists dw_tmp.bian_transporter_shishi_paidan_receiver_distance;
@@ -502,18 +496,18 @@ create index idx2 on dw_tmp.bian_transporter_shishi_paidan_supplier_distance(ord
 --------------------------------------------------------------------
 --------------------------------------------------------------------
 -------------------------数据宽表-----------------------------------
-create table dw_tmp.paidan_model_data as
---insert into table dw_tmp.paidan_model_data
+drop table if exists dw_test.paidan_model_data;
+create table dw_test.paidan_model_data as
+--insert into table dw_test.paidan_model_data
 select 
 	a.create_dt as create_dt,
-	a.order_id as order_id
-	a.order_group_id as order_group_id,
-	a.transporter_id as transporter_id,
-	a.supplier_id as supplier_id,
-	paidan_time,
+	concat(a.order_id,'_',a.order_group_id,'_',a.supplier_id,'_',a.transporter_id) as order_supplier_transporter,
+	hour(paidan_time) as paidan_hour,
 	order_source_from,
 	is_cargo_advance_needed,
 	tips_amt,
+	allowance_amt,
+	deliver_fee_amt,
 	allowance_amt + deliver_fee_amt as fee_sum,
 	transporter_before_one_day_paidan_num,
  	transporter_before_one_day_paidan_success_num,
