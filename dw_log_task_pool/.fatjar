@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Tue Aug 25 12:00:54 CST 2015
+onejar.license.required=true
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=dw_log_task_pool.jar
+manifest.mergeall=true
+manifest.mainclass=main.MainClass
+manifest.file=<createnew>
+jarname.isextern=false
+onejar.expand=
+excludes=
+includes=
