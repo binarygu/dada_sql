@@ -609,7 +609,7 @@ left join
 on a.transporter_id = f.transporter_id and a.supplier_id = f.supplier_id
 left join
 	dw_tmp.bian_transporter_supplier_dongtai_jiedan g 
-on a.transporter_id = g.transporter_id and a.supplier_id = g.transporter_id
+on a.transporter_id = g.transporter_id and a.supplier_id = g.supplier_id
 left join
 	dw_tmp.bian_block_pipei_dongtai_paidan h 
 on a.transporter_id = h.transporter_id
