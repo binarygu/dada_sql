@@ -5,7 +5,7 @@
 --------------------------------------------------------------------
 --------------------------------------------------------------------
 ----------------设置时间和城市的用户变量----------------------------
-set @mydate = '2015-12-08';
+set @mydate = '2015-12-09';
 set @mycity = 4;
 
 --------------------------------------------------------------------
@@ -41,7 +41,8 @@ from
 	dw.dw_tsp_order
 where
 	create_dt between date_sub(@mydate,interval 15 day) and @mydate and  
-	city_id = @mycity;
+	city_id = @mycity and 
+	order_type_id <> 2;
 create index idx1 on dw_tmp.bian_paidan_model_order(order_group_id);
 create index idx2 on dw_tmp.bian_paidan_model_order(order_id);
 create index idx3 on dw_tmp.bian_paidan_model_order(transporter_id);
@@ -79,7 +80,10 @@ create table dw_tmp.bian_paidan_model_transporter_order as
 select
 	cal_dt,
 	create_dt,
-	a.create_time as paidan_time,
+	case 
+		when a.create_time > b.create_time then b.create_time 
+		else a.create_time 
+	end as paidan_time,
 	b.create_time as jiedan_time,--验证派单数据和接单数据的早晚
 	finish_dt,
 	a.transporter_id as transporter_id,
@@ -118,7 +122,10 @@ union
 select 
 	cal_dt,
 	create_dt,
-	a.create_time as paidan_time,
+	case 
+		when a.create_time > b.create_time then b.create_time 
+		else a.create_time 
+	end as paidan_time,
 	b.create_time as jiedan_time,
 	finish_dt,
 	a.transporter_id as transporter_id,
@@ -405,9 +412,9 @@ select
 	a.order_group_id as order_group_id,
 	a.transporter_id as transporter_id,
 	sum(case when finish_time < paidan_time then 1 else 0 end) as today_finish_order_num,
-	sum(case when finish_time > paidan_time then 1 else 0 end) as today_never_finish_order_num, --对比之前的是否相等
-	sum(case when fetch_time < paidan_time and finish_time > paidan_time then 1 else 0 end) as today_fetch_order_num, --已经取货的订单数
-	sum(case when fetch_time > paidan_time and finish_time > paidan_time then 1 else 0 end) as today_never_fetch_order_num --未取货的订单数
+	sum(case when finish_time > paidan_time then 1 else 0 end) as today_never_finish_order_num,
+	sum(case when fetch_time < paidan_time and finish_time > paidan_time then 1 else 0 end) as today_fetch_order_num,
+	sum(case when fetch_time > paidan_time and finish_time > paidan_time then 1 else 0 end) as today_never_fetch_order_num 
 from
 	dw_tmp.bian_paidan_model_transporter_order a
 inner join
@@ -457,6 +464,7 @@ group by
 	1,2,3;
 create index idx1 on dw_tmp.bian_transporter_shishi_paidan_receiver_distance(order_id);
 create index idx2 on dw_tmp.bian_transporter_shishi_paidan_receiver_distance(order_group_id);
+create index idx3 on dw_tmp.bian_transporter_shishi_paidan_receiver_distance(transporter_id);
 
 ----派单时距离数据(到商家的距离)
 drop table if exists dw_tmp.bian_transporter_shishi_paidan_supplier_distance;
@@ -492,18 +500,20 @@ group by
 	1,2,3;
 create index idx1 on dw_tmp.bian_transporter_shishi_paidan_supplier_distance(order_id);
 create index idx2 on dw_tmp.bian_transporter_shishi_paidan_supplier_distance(order_group_id);
+create index idx3 on dw_tmp.bian_transporter_shishi_paidan_supplier_distance(transporter_id);
+
 
 --------------------------------------------------------------------
 --------------------------------------------------------------------
 -------------------------数据宽表-----------------------------------
-drop table if exists dw_test.paidan_model_data;
-create table dw_test.paidan_model_data as
---insert into table dw_test.paidan_model_data
+drop table if exists dw_test.bian_paidan_model_data;
+create table dw_test.bian_paidan_model_data as
+--insert into table dw_test.bian_paidan_model_data
 select 
 	a.create_dt as create_dt,
 	concat(a.order_id,'_',a.order_group_id,'_',a.supplier_id,'_',a.transporter_id) as order_supplier_transporter,
 	hour(paidan_time) as paidan_hour,
-	order_source_from,
+	case when order_source_from = 'Android' then 0 else 1 end as order_source_from,
 	is_cargo_advance_needed,
 	tips_amt,
 	allowance_amt,
@@ -608,13 +618,13 @@ left join
 on a.transporter_id = i.transporter_id
 left join 
 	dw_tmp.bian_transporter_shishi_paidan_num j 
-on a.order_id = j.order_id and a.order_group_id = j.order_group_id
+on a.order_id = j.order_id and a.order_group_id = j.order_group_id and a.transporter_id = j.transporter_id
 left join
 	dw_tmp.bian_transporter_shishi_paidan_receiver_distance k
-on a.order_id = k.order_id and a.order_group_id = k.order_group_id
+on a.order_id = k.order_id and a.order_group_id = k.order_group_id and a.transporter_id = k.transporter_id
 left join 
 	dw_tmp.bian_transporter_shishi_paidan_supplier_distance m
-on a.order_id = m.order_id and a.order_group_id = m.order_group_id 
+on a.order_id = m.order_id and a.order_group_id = m.order_group_id and a.transporter_id = m.transporter_id
 where
 	a.create_dt = @mydate;
 
