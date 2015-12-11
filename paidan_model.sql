@@ -1,17 +1,17 @@
---训练数据
---base:南京
---time:2015-11-30
+-- 训练数据
+-- base:南京
+-- time:2015-11-30
 
---------------------------------------------------------------------
---------------------------------------------------------------------
-----------------设置时间和城市的用户变量----------------------------
+-- ------------------------------------------------------------------
+-- ------------------------------------------------------------------
+-- --------------设置时间和城市的用户变量----------------------------
 set @mydate = '2015-12-09';
 set @mycity = 4;
 
---------------------------------------------------------------------
---------------------------------------------------------------------
-------------------------派单静态数据--------------------------------
---派单订单数据 
+-- ------------------------------------------------------------------
+-- ------------------------------------------------------------------
+-- ----------------------派单静态数据--------------------------------
+-- 派单订单数据 
 drop table if exists dw_tmp.bian_paidan_model_order;
 create table dw_tmp.bian_paidan_model_order as
 select
@@ -49,7 +49,7 @@ create index idx3 on dw_tmp.bian_paidan_model_order(transporter_id);
 create index idx4 on dw_tmp.bian_paidan_model_order(supplier_id);
 
 
---派单日志数据
+-- 派单日志数据
 drop table if exists dw_tmp.bian_paidan_model_transporter;
 create table dw_tmp.bian_paidan_model_transporter as
 select
@@ -74,7 +74,7 @@ where
 	log_type_id = 1;
 
 
---派单静态数据
+-- 派单静态数据
 drop table if exists dw_tmp.bian_paidan_model_transporter_order;
 create table dw_tmp.bian_paidan_model_transporter_order as
 select
@@ -84,7 +84,7 @@ select
 		when a.create_time > b.create_time then b.create_time 
 		else a.create_time 
 	end as paidan_time,
-	b.create_time as jiedan_time,--验证派单数据和接单数据的早晚
+	b.create_time as jiedan_time,
 	finish_dt,
 	a.transporter_id as transporter_id,
 	running_order_cnt,
@@ -163,10 +163,10 @@ create index idx2 on dw_tmp.bian_paidan_model_transporter_order(order_id);
 create index idx3 on dw_tmp.bian_paidan_model_transporter_order(transporter_id);
 create index idx4 on dw_tmp.bian_paidan_model_transporter_order(supplier_id);
 
---------------------------------------------------------------------
---------------------------------------------------------------------
------------------------派单动态数据---------------------------------
---达达动态派单数据
+-- ------------------------------------------------------------------
+-- ------------------------------------------------------------------
+-- ---------------------派单动态数据---------------------------------
+-- 达达动态派单数据
 drop table if exists dw_tmp.bian_transporter_dongtai_paidan;
 create table dw_tmp.bian_transporter_dongtai_paidan as
 select
@@ -189,7 +189,7 @@ group by
 	1,2;
 create index idx1 on dw_tmp.bian_transporter_dongtai_paidan(transporter_id);
 
---达达动态接单数据
+-- 达达动态接单数据
 drop table if exists dw_tmp.bian_transporter_dongtai_jiedan;
 create table dw_tmp.bian_transporter_dongtai_jiedan as
 select
@@ -212,7 +212,7 @@ group by
 	1,2;
 create index idx1 on dw_tmp.bian_transporter_dongtai_jiedan(transporter_id);
 
---商家动态派单数据
+-- 商家动态派单数据
 drop table if exists dw_tmp.bian_supplier_dongtai_paidan;
 create table dw_tmp.bian_supplier_dongtai_paidan as
 select
@@ -236,7 +236,7 @@ group by
 create index idx1 on dw_tmp.bian_supplier_dongtai_paidan(supplier_id);
 
 
---商家动态接单数据
+-- 商家动态接单数据
 drop table if exists dw_tmp.bian_supplier_dongtai_jiedan;
 create table dw_tmp.bian_supplier_dongtai_jiedan as
 select
@@ -259,7 +259,7 @@ group by
 	1,2;
 create index idx1 on dw_tmp.bian_supplier_dongtai_jiedan(supplier_id);
 
---达达商家交互动态派单数据
+-- 达达商家交互动态派单数据
 drop table if exists dw_tmp.bian_transporter_supplier_dongtai_paidan;
 create table dw_tmp.bian_transporter_supplier_dongtai_paidan as
 select
@@ -284,7 +284,7 @@ group by
 create index idx1 on dw_tmp.bian_transporter_supplier_dongtai_paidan(transporter_id);
 create index idx2 on dw_tmp.bian_transporter_supplier_dongtai_paidan(supplier_id);
 
---达达商家交互动态接单数据
+-- 达达商家交互动态接单数据
 drop table if exists dw_tmp.bian_transporter_supplier_dongtai_jiedan;
 create table dw_tmp.bian_transporter_supplier_dongtai_jiedan as
 select
@@ -309,7 +309,7 @@ group by
 create index idx1 on dw_tmp.bian_transporter_supplier_dongtai_jiedan(transporter_id);
 create index idx2 on dw_tmp.bian_transporter_supplier_dongtai_jiedan(supplier_id);
 
---派单板块匹配数据
+-- 派单板块匹配数据
 drop table if exists dw_tmp.bian_block_pipei_dongtai_paidan;
 create table dw_tmp.bian_block_pipei_dongtai_paidan as
 select
@@ -356,7 +356,7 @@ from
 having rank = 1;
 create index idx1 on dw_tmp.bian_block_pipei_dongtai_paidan(transporter_id);
 
-----接单板块匹配数据
+-- 接单板块匹配数据
 drop table if exists dw_tmp.bian_block_pipei_dongtai_jiedan;
 create table dw_tmp.bian_block_pipei_dongtai_jiedan as
 select
@@ -401,10 +401,10 @@ from
 having rank = 1;
 create index idx1 on dw_tmp.bian_block_pipei_dongtai_jiedan(transporter_id);
 
---------------------------------------------------------------------
---------------------------------------------------------------------
-------------------------派单实时数据--------------------------------
---派单时手中订单数据
+-- ------------------------------------------------------------------
+-- ------------------------------------------------------------------
+-- ----------------------派单实时数据--------------------------------
+-- 派单时手中订单数据
 drop table if exists dw_tmp.bian_transporter_shishi_paidan_num;
 create table dw_tmp.bian_transporter_shishi_paidan_num as
 select
@@ -430,7 +430,7 @@ create index idx1 on dw_tmp.bian_transporter_shishi_paidan_num(order_id);
 create index idx2 on dw_tmp.bian_transporter_shishi_paidan_num(order_group_id);
 create index idx3 on dw_tmp.bian_transporter_shishi_paidan_num(transporter_id);
 	
---派单时距离数据(到接受者的距离)
+-- 派单时距离数据(到接受者的距离)
 drop table if exists dw_tmp.bian_transporter_shishi_paidan_receiver_distance;
 create table dw_tmp.bian_transporter_shishi_paidan_receiver_distance as
 select 
@@ -466,7 +466,7 @@ create index idx1 on dw_tmp.bian_transporter_shishi_paidan_receiver_distance(ord
 create index idx2 on dw_tmp.bian_transporter_shishi_paidan_receiver_distance(order_group_id);
 create index idx3 on dw_tmp.bian_transporter_shishi_paidan_receiver_distance(transporter_id);
 
-----派单时距离数据(到商家的距离)
+-- 派单时距离数据(到商家的距离)
 drop table if exists dw_tmp.bian_transporter_shishi_paidan_supplier_distance;
 create table dw_tmp.bian_transporter_shishi_paidan_supplier_distance as
 select 
@@ -503,12 +503,12 @@ create index idx2 on dw_tmp.bian_transporter_shishi_paidan_supplier_distance(ord
 create index idx3 on dw_tmp.bian_transporter_shishi_paidan_supplier_distance(transporter_id);
 
 
---------------------------------------------------------------------
---------------------------------------------------------------------
--------------------------数据宽表-----------------------------------
-drop table if exists dw_test.bian_paidan_model_data;
-create table dw_test.bian_paidan_model_data as
---insert into table dw_test.bian_paidan_model_data
+-- ------------------------------------------------------------------
+-- ------------------------------------------------------------------
+-- -----------------------数据宽表-----------------------------------
+-- drop table if exists dw_test.bian_paidan_model_data;
+-- create table dw_test.bian_paidan_model_data as
+insert into dw_test.bian_paidan_model_data
 select 
 	a.create_dt as create_dt,
 	concat(a.order_id,'_',a.order_group_id,'_',a.supplier_id,'_',a.transporter_id) as order_supplier_transporter,
