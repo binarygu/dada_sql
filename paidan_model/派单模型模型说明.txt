@@ -1,0 +1,53 @@
+
+##############################
+##########计算公式############
+##############################
+
+w0 = -0.000975982157029
+w1 = -0.000646822060616
+w2 = 0.0187406348584
+w3 = 1.37474320374
+w4 = -0.000369740403727
+w5 = 0.000986904766432
+w6 = -0.0298066731145
+w7 = 1.4893854643
+w8 = 0.000341291904275
+w9 = -0.000220041052839
+wx = 0.0106828484687
+b = -0.642343260957
+
+z =  w0 * supplier_receiver_distance + 
+     w1 * transporter_supplier_distance +
+     w2 * today_finish_order_num +
+     w3 * transporter_before_fourteen_day_paidan_lv +
+     w4 * paidan_receiver_distance_jiedan_receiver_min +
+     w5 * paidan_supplier_distance_jiedan_receiver_min +
+     w6 * paidan_hour +
+     w7 * transporter_before_seven_day_paidan_lv +
+     w8 * paidan_supplier_distance_jiedan_receiver_max +
+     w9 * paidan_receiver_distance_jiedan_receiver_max +
+     wx * allowance_amt +
+     b
+
+y = 1 / (1 + e^(-z))
+
+这里的y就是计算出来的派单概率值，被派单的人应该满足两个条件：
+① y大于0.5
+② 取y值最大的那个达达
+
+###########################################
+###############变量说明####################
+###########################################
+supplier_receiver_distance：商家到收货人的距离（线上计算）
+transporter_supplier_distance：达达到商家的距离（线上计算）
+today_finish_order_num：达达在该派单之前已经完成的订单数（线上计算）
+transporter_before_fourteen_day_paidan_lv：达达在之前14内的派单接受率，（线下取数，在
+dw_api.api_paidan_model_history_transporter表中，字段名为transporter_before_fourteen_day_paidan_lv）
+paidan_receiver_distance_jiedan_receiver_min：如果达达当前手上有未完成的订单，则为派单的收货人到未完成订单的收货人中的最小距离，如果达达当前手上没有订单则为0（线上计算）
+paidan_supplier_distance_jiedan_receiver_min：如果达达当前手上有未完成的订单，则为派单的商户到未完成订单的收货人的距离，如果达达当前手上没有订单则为0（线上计算）
+paidan_hour：派单时间（到小时，线上计算）
+transporter_before_seven_day_paidan_lv：达达之前7天内派单接受率，（线下取数，在
+dw_api.api_paidan_model_history_transporter表中，字段名为transporter_before_seven_day_paidan_lv）
+paidan_supplier_distance_jiedan_receiver_max：如果达达当前手上有未完成订单，则为派单商户到未完成订单的收货人的最大距离，如果达达当前手上没有订单则为0（线上计算）
+paidan_receiver_distance_jiedan_receiver_max：如果达达当前手上有未完成订单，则为派单的收货人到未完成订单的收货人的最大距离，如果达达当前手上没有订单则为0（线上计算）
+allowance_amt：补贴金额（线上计算）
