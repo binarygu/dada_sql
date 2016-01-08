@@ -10,8 +10,8 @@
 
 
 -- 达达15天内的派单数据
-drop table if exists dw_api.api_paidan_model_history_transporter_paidan;
-create table dw_api.api_paidan_model_history_transporter_paidan as
+drop table if exists dw_tmp.bian_paidan_model_history_transporter_paidan;
+create table dw_tmp.bian_paidan_model_history_transporter_paidan as
 select
 	transporter_id,
 	sum(case when create_dt = date_sub(curdate(),interval 1 day) then 1 else 0 end) transporter_before_one_day_paidan_num,
@@ -29,12 +29,12 @@ where
 	create_dt < curdate()
 group by 
 	1;
-create index idx1 on dw_api.api_paidan_model_history_transporter_paidan(transporter_id);
+create index idx1 on dw_tmp.bian_paidan_model_history_transporter_paidan(transporter_id);
 
 
 -- 达达15天内的接单数据
-drop table if exists dw_api.api_paidan_model_history_transporter_jiedan;
-create table dw_api.api_paidan_model_history_transporter_jiedan as
+drop table if exists dw_tmp.bian_paidan_model_history_transporter_jiedan;
+create table dw_tmp.bian_paidan_model_history_transporter_jiedan as
 select
 	transporter_id,
 	sum(case when create_dt = date_sub(curdate(),interval 1 day) then 1 else 0 end) transporter_before_one_day_jiedan_num,
@@ -52,7 +52,7 @@ where
 	create_dt < curdate()
 group by 
 	1;
-create index idx1 on dw_api.api_paidan_model_history_transporter_jiedan(transporter_id);
+create index idx1 on dw_tmp.bian_paidan_model_history_transporter_jiedan(transporter_id);
 
 
 
@@ -101,9 +101,9 @@ select
 	transporter_before_fourteen_day_jiedan_success_num,
 	transporter_before_fourteen_day_jiedan_lv
 from 
-	dw_api.api_paidan_model_history_transporter_jiedan a
+	dw_tmp.bian_paidan_model_history_transporter_jiedan a
 left join 
-	dw_api.api_paidan_model_history_transporter_paidan b
+	dw_tmp.bian_paidan_model_history_transporter_paidan b
 on a.transporter_id = b.transporter_id
 
 union 
@@ -130,9 +130,9 @@ select
 	transporter_before_fourteen_day_jiedan_success_num,
 	transporter_before_fourteen_day_jiedan_lv
 from 
-	dw_api.api_paidan_model_history_transporter_paidan a
+	dw_tmp.bian_paidan_model_history_transporter_paidan a
 left join 
-	dw_api.api_paidan_model_history_transporter_jiedan b
+	dw_tmp.bian_paidan_model_history_transporter_jiedan b
 on a.transporter_id = b.transporter_id;
 
 
